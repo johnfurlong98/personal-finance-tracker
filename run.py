@@ -40,13 +40,23 @@ def validate_data(values):
         print("Invalid data: Exactly 4 values are required.")
         return False
     try:
-        # Ensuring the amount is a valid number
         float(values[2])
     except ValueError:
         print("Invalid data: Amount must be a valid number.")
         return False
-    # Additional validations can be added here (e.g., date format)
     return True
+
+
+def update_worksheet(data, worksheet_name):
+    """
+    Updates the specified worksheet with the new data.
+    """
+    print(f"Updating {worksheet_name} worksheet...")
+    worksheet = SHEET.worksheet(worksheet_name)
+    worksheet.append_row(data)
+    print(f"{worksheet_name} worksheet updated successfully.\n")
+
+
 
 def main():
     # Testing the get_financial_data function
