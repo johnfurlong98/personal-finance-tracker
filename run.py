@@ -57,6 +57,28 @@ def update_worksheet(data, worksheet_name):
     print(f"{worksheet_name} worksheet updated successfully.\n")
 
 
+def update_actual_amounts():
+    """
+    Updates the Actual Amount column in the Budget sheet based on expenses.
+    """
+    expenses_records = SHEET.worksheet('expenses').get_all_records()
+    budget_records = SHEET.worksheet('budget').get_all_values()
+
+    expenses_by_category = {}
+    for record in expenses_records:
+        category, amount = record['Category'], float(record['Amount'])
+        if category in expenses_by_category:
+            expenses_by_category[category] += amount
+        else:
+            expenses_by_category[category] = amount
+
+    for i, row in enumerate(budget_records[1:], start=2):  # Skip header, adjust index for update_cell
+        category = row[0]
+        if category in expenses_by_category:
+            SHEET.worksheet('budget').update_cell(i, 3, expenses_by_category[category])
+    print("Budget sheet updated successfully with actual amounts.\n")
+
+
 def main():
     print("Welcome to the Personal Finance Tracker.\n")
     while True:
@@ -71,8 +93,12 @@ def main():
             if data:
                 worksheet_name = "expenses" if data_type == 'expense' else "income"
                 update_worksheet(data, worksheet_name)
+                if data_type == 'expense':  # Update budget after adding an expense
+                    update_actual_amounts()
             else:
                 print("Failed to add data. Please try again.\n")
+        elif action == 'update budget':  # Manually trigger budget update
+            update_actual_amounts()        
         elif action == 'quit':
             print("Exiting the Personal Finance Tracker. Goodbye!")
             break
