@@ -57,12 +57,27 @@ def update_worksheet(data, worksheet_name):
     print(f"{worksheet_name} worksheet updated successfully.\n")
 
 
-
 def main():
-    # Testing the get_financial_data function
-    print("Testing get_financial_data function")
-    test_data = get_financial_data('expense')  # Test with 'expense' or 'income'
-    print(f"Returned data: {test_data}")
+    print("Welcome to the Personal Finance Tracker.\n")
+    while True:
+        action = input("Choose action - 'add' for adding data, 'quit' to exit: ").lower()
+        if action == 'add':
+            data_type = input("Type 'expense' or 'income' to specify the data type: ").lower()
+            if data_type not in ['expense', 'income']:
+                print("Invalid type. Please choose 'expense' or 'income'.\n")
+                continue
+
+            data = get_financial_data(data_type)
+            if data:
+                worksheet_name = "expenses" if data_type == 'expense' else "income"
+                update_worksheet(data, worksheet_name)
+            else:
+                print("Failed to add data. Please try again.\n")
+        elif action == 'quit':
+            print("Exiting the Personal Finance Tracker. Goodbye!")
+            break
+        else:
+            print("Invalid action. Please choose 'add' or 'quit'.\n")
 
 if __name__ == "__main__":
     main()
