@@ -79,10 +79,26 @@ def update_actual_amounts():
     print("Budget sheet updated successfully with actual amounts.\n")
 
 
+def update_surplus_deficit():
+    """
+    Updates the 'Surplus/Deficit' column in the 'budget' worksheet.
+    """
+    budget_sheet = SHEET.worksheet('budget')
+    budget_records = budget_sheet.get_all_values()[1:]  # Exclude the header row
+
+    for i, row in enumerate(budget_records, start=2):  # start=2 to align with Google Sheets' 1-based indexing
+        budgeted = float(row[1]) if row[1] else 0  # Conversion to float; Column B is "Budgeted Amount"
+        actual = float(row[2]) if row[2] else 0    # Conversion to float; Column C is "Actual Amount"
+        surplus_deficit = budgeted - actual        # Calculate "Budgeted Amount" - "Actual Amount"
+        budget_sheet.update_cell(i, 4, surplus_deficit)  # Update the 4th column (D) with surplus/deficit
+
+    print("Budget sheet's Surplus/Deficit column updated successfully.\n")
+
+
 def main():
     print("Welcome to the Personal Finance Tracker.\n")
     while True:
-        action = input("Choose action - 'add' for adding data, 'quit' to exit: ").lower()
+        action = input("Choose action - 'add' for adding data, 'update budget' to refresh budget, 'quit' to exit: ").lower()
         if action == 'add':
             data_type = input("Type 'expense' or 'income' to specify the data type: ").lower()
             if data_type not in ['expense', 'income']:
@@ -93,17 +109,20 @@ def main():
             if data:
                 worksheet_name = "expenses" if data_type == 'expense' else "income"
                 update_worksheet(data, worksheet_name)
-                if data_type == 'expense':  # Update budget after adding an expense
-                    update_actual_amounts()
+                if data_type == 'expense':  # Only update budget and surplus/deficit after an expense is added
+                    update_actual_amounts()  # Ensure "Actual Amount" is updated
+                    update_surplus_deficit()  # Then, calculate and update "Surplus/Deficit"
+                print("Data added successfully.\n")
             else:
                 print("Failed to add data. Please try again.\n")
-        elif action == 'update budget':  # Manually trigger budget update
-            update_actual_amounts()        
+        elif action == 'update budget':  # Allows manual trigger to update the budget calculations
+            update_actual_amounts()
+            update_surplus_deficit()
         elif action == 'quit':
             print("Exiting the Personal Finance Tracker. Goodbye!")
             break
         else:
-            print("Invalid action. Please choose 'add' or 'quit'.\n")
+            print("Invalid action. Please choose 'add', 'update budget', or 'quit'.\n")
 
 if __name__ == "__main__":
     main()
