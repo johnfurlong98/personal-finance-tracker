@@ -47,6 +47,16 @@ def validate_data(values):
     return True
 
 
+def calculate_total(sheet_name):
+    """
+    Calculates the total amount for either the 'income' or 'expenses' worksheet.
+    """
+    sheet = SHEET.worksheet(sheet_name)
+    records = sheet.get_all_records()
+    total_amount = sum(float(record['Amount']) for record in records)
+    return total_amount
+
+
 def update_worksheet(data, worksheet_name):
     """
     Updates the specified worksheet with the new data.
@@ -55,6 +65,19 @@ def update_worksheet(data, worksheet_name):
     worksheet = SHEET.worksheet(worksheet_name)
     worksheet.append_row(data)
     print(f"{worksheet_name} worksheet updated successfully.\n")
+
+    calculate_and_display_net_income()
+
+
+def calculate_and_display_net_income():
+    """
+    Calculates net income (total income - total expenses) and displays it in the terminal.
+    """
+    total_income = calculate_total('income')
+    total_expenses = calculate_total('expenses')
+    net_income = total_income - total_expenses
+    
+    print(f"Net Income: {net_income}")
 
 
 def update_actual_amounts():
@@ -72,7 +95,7 @@ def update_actual_amounts():
         else:
             expenses_by_category[category] = amount
 
-    for i, row in enumerate(budget_records[1:], start=2):  # Skip header, adjust index for update_cell
+    for i, row in enumerate(budget_records[1:], start=2):
         category = row[0]
         if category in expenses_by_category:
             SHEET.worksheet('budget').update_cell(i, 3, expenses_by_category[category])
@@ -84,13 +107,13 @@ def update_surplus_deficit():
     Updates the 'Surplus/Deficit' column in the 'budget' worksheet.
     """
     budget_sheet = SHEET.worksheet('budget')
-    budget_records = budget_sheet.get_all_values()[1:]  # Exclude the header row
+    budget_records = budget_sheet.get_all_values()[1:]
 
-    for i, row in enumerate(budget_records, start=2):  # start=2 to align with Google Sheets' 1-based indexing
-        budgeted = float(row[1]) if row[1] else 0  # Conversion to float; Column B is "Budgeted Amount"
-        actual = float(row[2]) if row[2] else 0    # Conversion to float; Column C is "Actual Amount"
-        surplus_deficit = budgeted - actual        # Calculate "Budgeted Amount" - "Actual Amount"
-        budget_sheet.update_cell(i, 4, surplus_deficit)  # Update the 4th column (D) with surplus/deficit
+    for i, row in enumerate(budget_records, start=2):  
+        budgeted = float(row[1]) if row[1] else 0  
+        actual = float(row[2]) if row[2] else 0    
+        surplus_deficit = budgeted - actual        
+        budget_sheet.update_cell(i, 4, surplus_deficit)  
 
     print("Budget sheet's Surplus/Deficit column updated successfully.\n")
 
@@ -109,13 +132,13 @@ def main():
             if data:
                 worksheet_name = "expenses" if data_type == 'expense' else "income"
                 update_worksheet(data, worksheet_name)
-                if data_type == 'expense':  # Only update budget and surplus/deficit after an expense is added
-                    update_actual_amounts()  # Ensure "Actual Amount" is updated
-                    update_surplus_deficit()  # Then, calculate and update "Surplus/Deficit"
+                if data_type == 'expense':  
+                    update_actual_amounts()
+                    update_surplus_deficit()  
                 print("Data added successfully.\n")
             else:
                 print("Failed to add data. Please try again.\n")
-        elif action == 'update budget':  # Allows manual trigger to update the budget calculations
+        elif action == 'update budget': 
             update_actual_amounts()
             update_surplus_deficit()
         elif action == 'quit':
