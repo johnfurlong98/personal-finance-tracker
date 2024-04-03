@@ -119,7 +119,7 @@ def update_surplus_deficit():
 def main():
     print("Welcome to the Personal Finance Tracker.\n")
     while True:
-        action = input("Choose action - 'add' for adding data, 'update budget' to refresh budget, 'quit' to exit: ").lower()
+        action = input("Choose action - 'add' for adding data,'quit' to exit: ").lower()
         if action == 'add':
             data_type = input("Type 'expense' or 'income' to specify the data type: ").lower()
             if data_type not in ['expense', 'income']:
