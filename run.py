@@ -36,6 +36,20 @@ def validate_data(values):
         print("Invalid data: Exactly 4 values are required.")
         return False
     
+    day, month, year = values[0].split('-')
+
+    if not (day.isdigit() and month.isdigit() and year.isdigit()):
+        print("Invalid data: Date must be in the format DD-MM-YYYY.")
+        return False
+    
+    if len(day) != 2 or len(month) != 2:
+        print("Invalid data: Day and month must have two digits.")
+        return False
+    
+    if len(year) != 4:
+        print("Invalid data: Year must have four digits.")
+        return False
+
     try:
         datetime.strptime(values[0], '%d-%m-%Y')
     except ValueError:
