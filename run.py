@@ -14,6 +14,7 @@ SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open('personal_finance_tracker')
 
+
 def get_financial_data(data_type):
     """
     Prompt the user for financial data based on the specified type (expense or income).
@@ -27,6 +28,7 @@ def get_financial_data(data_type):
         return financial_data
     
     return None
+
 
 def validate_data(values):
     """
@@ -64,6 +66,7 @@ def validate_data(values):
     
     return True
 
+
 def calculate_total(sheet_name):
     """
     Calculates the total amount for either the 'income' or 'expenses' worksheet.
@@ -72,6 +75,7 @@ def calculate_total(sheet_name):
     records = sheet.get_all_records()
     total_amount = sum(float(record['Amount']) for record in records)
     return total_amount
+
 
 def update_worksheet(data, worksheet_name):
     """
@@ -84,6 +88,7 @@ def update_worksheet(data, worksheet_name):
 
     calculate_and_display_net_income()
 
+
 def calculate_and_display_net_income():
     """
     Calculates net income (total income - total expenses) and displays it in the terminal.
@@ -93,6 +98,7 @@ def calculate_and_display_net_income():
     net_income = total_income - total_expenses
     
     print(f"Net Income: {net_income}")
+
 
 def update_actual_amounts():
     """
@@ -115,6 +121,7 @@ def update_actual_amounts():
             SHEET.worksheet('budget').update_cell(i, 3, expenses_by_category[category])
     print("Budget sheet updated successfully with actual amounts.\n")
 
+
 def update_surplus_deficit():
     """
     Updates the 'Surplus/Deficit' column in the 'budget' worksheet.
@@ -129,6 +136,7 @@ def update_surplus_deficit():
         budget_sheet.update_cell(i, 4, surplus_deficit)  
 
     print("Budget sheet's Surplus/Deficit column updated successfully.\n")
+
 
 def main():
     print("Welcome to the Personal Finance Tracker.\n")
