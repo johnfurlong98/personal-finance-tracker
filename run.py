@@ -158,15 +158,20 @@ def main():
             if data:
                 worksheet_name = "expenses" if data_type == 'expense' else "income"
                 update_worksheet(data, worksheet_name)
+
+                update_projected_and_actual_net_income()
+
                 if data_type == 'expense':  
                     update_actual_amounts()
                     update_surplus_deficit()  
-                print("Data added successfully.\n")
+                print("Data added successfully. Projected and Actual Net Incomes are updated.\n")
             else:
                 print("Failed to add data. Please try again.\n")
         elif action == 'update budget': 
             update_actual_amounts()
             update_surplus_deficit()
+            update_projected_and_actual_net_income()
+            print("Budget sheet updated successfully.\n")
         elif action == 'quit':
             print("Exiting the Personal Finance Tracker. Goodbye!")
             break
