@@ -51,13 +51,13 @@ Welcome to Personal Finance Tracker, a place where you can track your income and
 - The Personal Finance Planner is a user-friendly tool designed to empower individuals in taking control of their financial well-being. With features for expense tracking, budget management, and insightful financial analysis, it offers a comprehensive solution to help users make informed decisions, achieve financial goals, and pave the way towards a more secure future.
 
 ## Features
-- 
+
 - Add Income and Expenses: Users can input their income and expenses, including the date, category, amount, and description.
 - View Summary: Users can view a summary of their total income, total expenses, and net income.
 - Budget Management: Users can set budgets for different expense categories and track their spending against these budgets.
 - Financial Insights: Users can get insights into their spending habits.
 
-  ## Technogolgy Used
+## Technogolgy Used
 
 ### Languages Used
 - Python 
@@ -146,6 +146,3 @@ To solve this, we streamlined the process by using datetime.strptime(values[0], 
 ## Content
 
 - I reffered to code from the modules on Python to help me with this project.
-
-### Thanks 
-
