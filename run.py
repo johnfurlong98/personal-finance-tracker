@@ -169,6 +169,32 @@ def update_projected_and_actual_net_income():
     print("Updated the budget sheet with Projected and Actual Net Income.\n")
 
 
+def update_budget_sheet():
+    """
+    New function to prompt the user for budget updates and apply them to the budget sheet.
+    """
+    print("\nEnter the category and the new budgeted amount for the update:")
+    print("Format: Category,Budgeted Amount")
+    data_str = input("Enter your data here: ")
+    budget_data = [data.strip() for data in data_str.split(",")]
+
+    if len(budget_data) != 2 or not validate_data(budget_data):
+        print("Failed to update the budget. Please try again.\n")
+        return
+    
+    category, budgeted_amount = budget_data
+    budget_sheet = SHEET.worksheet('budget')
+    categories = budget_sheet.col_values(1)  # Get all existing categories
+
+    if category in categories:
+        row_index = categories.index(category) + 1  # Sheets are 1-indexed
+        budget_sheet.update_cell(row_index, 2, budgeted_amount)  # Column 2 for budgeted amounts
+        print(f"Budget for '{category}' updated to {budgeted_amount}.\n")
+    else:
+        print(f"Category '{category}' not found. Please add it manually in the sheet if needed.\n")
+
+
+
 def main():
     print("Welcome to the Personal Finance Tracker.\n")
     while True:
