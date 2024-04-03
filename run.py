@@ -2,7 +2,7 @@ import gspread
 from google.oauth2.service_account import Credentials
 from datetime import datetime
 
-# Google Sheets setup
+
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive.file",
@@ -142,6 +142,7 @@ def update_surplus_deficit():
 
 def main():
     print("Welcome to the Personal Finance Tracker.\n")
+    print("Please ensure you've entered your budget categories and amounts into the budget sheet before proceeding. This allows the app to accurately compare your actual expenses against your planned budget.\n")
     while True:
         action = input("Choose action - 'add' for adding data,'quit' to exit:\n").lower()
         if action == 'add':
