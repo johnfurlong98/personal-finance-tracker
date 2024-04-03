@@ -118,6 +118,32 @@ def update_surplus_deficit():
     print("Budget sheet's Surplus/Deficit column updated successfully.\n")
 
 
+def update_projected_and_actual_net_income():
+     """
+    Calculates and updates the budget sheet with Projected and Actual Net Income for each category.
+    Projected Net Income is total income minus each category's budgeted amount.
+    Actual Net Income is total income minus each category's actual amount spent.
+    """
+    total_income = calculate_total('income') 
+    
+    budget_sheet = SHEET.worksheet('budget')
+    budget_records = budget_sheet.get_all_values()[1:]  
+    
+    for i, row in enumerate(budget_records, start=2):
+        category = row[0]
+        budgeted_amount = float(row[1]) if row[1] else 0
+        actual_amount = float(row[2]) if row[2] else 0
+        
+        projected_net_income = total_income - budgeted_amount
+        actual_net_income = total_income - actual_amount
+        
+        budget_sheet.update_cell(i, 5, projected_net_income)
+        budget_sheet.update_cell(i, 6, actual_net_income)
+    
+    print("Updated the budget sheet with Projected and Actual Net Income.\n")
+
+
+
 def main():
     print("Welcome to the Personal Finance Tracker.\n")
     while True:
