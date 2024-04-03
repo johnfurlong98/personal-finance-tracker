@@ -1,55 +1,32 @@
 import gspread
 from google.oauth2.service_account import Credentials
+from datetime import datetime
 
+# Google Sheets setup
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive.file",
     "https://www.googleapis.com/auth/drive"
-    ]
+]
 
 CREDS = Credentials.from_service_account_file('creds.json')
 SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
-SHEET = GSPREAD_CLIENT.open('personal _finance_tracker')
-
-expenses = SHEET.worksheet('expenses')
-
-data = expenses.get_all_values()
-
+SHEET = GSPREAD_CLIENT.open('personal_finance_tracker')
 
 def get_financial_data(data_type):
     """
-    Prompt the user for financial data based on the specified type (expense, income, or budget update).
+    Prompt the user for financial data based on the specified type (expense or income).
     """
-    if data_type in ['expense', 'income']:
-        print(f"\nPlease enter your {data_type} data in the following format:")
-        print("Date (DD-MM-YYYY), Category, Amount, Description")
-    elif data_type == 'budget':
-        print("\nPlease enter the category and the new budgeted amount you'd like to update:")
-        print("Format: Category,Budgeted Amount")
-
+    print(f"\nPlease enter your {data_type} data in the following format:")
+    print("Date (DD-MM-YYYY), Category, Amount, Description")
     data_str = input("Enter your data here: ")
     financial_data = [data.strip() for data in data_str.split(",")]
 
-    if data_type in ['expense', 'income'] and len(financial_data) != 4:
-        print("Invalid data: Please enter the data in the correct format for expense or income.")
-        return None
-    elif data_type == 'budget' and len(financial_data) != 2:
-        print("Invalid data: Please enter the data in the correct format for budget updates.")
-        return None
-
-    # For budget updates, validate the budgeted amount is a number
-    if data_type == 'budget':
-        try:
-            financial_data[1] = float(financial_data[1])  # Convert budgeted amount to float
-        except ValueError:
-            print("Invalid budgeted amount: Please enter a valid number.")
-            return None
-
-    # Additional validation for dates and amounts could be placed here for expenses and income
-
-    return financial_data
-
+    if validate_data(financial_data):
+        return financial_data
+    
+    return None
 
 def validate_data(values):
     """
@@ -59,24 +36,19 @@ def validate_data(values):
         print("Invalid data: Exactly 4 values are required.")
         return False
     
-        try:
-            datetime.strptime(values[0], '%d-%m-%Y')  # Corrected format
-            float(values[2])
-            return True
-        except ValueError:
-            print("Invalid data: Date must be in DD-MM-YYYY format and Amount must be a number.")
-            return False
-    elif len(values) == 2:  # Handling budget update format
-        try:
-            float(values[1])  # Ensure the budgeted amount is a number
-            return True
-        except ValueError:
-            print("Invalid budgeted amount: Please enter a valid number.")
-            return False
-    else:
-        print("Invalid data: Incorrect number of values provided.")
+    try:
+        datetime.strptime(values[0], '%d-%m-%Y')
+    except ValueError:
+        print("Invalid data: Date must be in the format DD-MM-YYYY.")
         return False
 
+    try:
+        float(values[2])
+    except ValueError:
+        print("Invalid data: Amount must be a valid number.")
+        return False
+    
+    return True
 
 def calculate_total(sheet_name):
     """
@@ -86,7 +58,6 @@ def calculate_total(sheet_name):
     records = sheet.get_all_records()
     total_amount = sum(float(record['Amount']) for record in records)
     return total_amount
-
 
 def update_worksheet(data, worksheet_name):
     """
@@ -99,7 +70,6 @@ def update_worksheet(data, worksheet_name):
 
     calculate_and_display_net_income()
 
-
 def calculate_and_display_net_income():
     """
     Calculates net income (total income - total expenses) and displays it in the terminal.
@@ -109,7 +79,6 @@ def calculate_and_display_net_income():
     net_income = total_income - total_expenses
     
     print(f"Net Income: {net_income}")
-
 
 def update_actual_amounts():
     """
@@ -132,7 +101,6 @@ def update_actual_amounts():
             SHEET.worksheet('budget').update_cell(i, 3, expenses_by_category[category])
     print("Budget sheet updated successfully with actual amounts.\n")
 
-
 def update_surplus_deficit():
     """
     Updates the 'Surplus/Deficit' column in the 'budget' worksheet.
@@ -147,53 +115,6 @@ def update_surplus_deficit():
         budget_sheet.update_cell(i, 4, surplus_deficit)  
 
     print("Budget sheet's Surplus/Deficit column updated successfully.\n")
-
-
-def update_projected_and_actual_net_income():
-    total_income = calculate_total('income')
-    
-    budget_sheet = SHEET.worksheet('budget')
-    budget_records = budget_sheet.get_all_values()[1:]
-    
-    for i, row in enumerate(budget_records, start=2):
-        category = row[0]
-        budgeted_amount = float(row[1]) if row[1] else 0
-        actual_amount = float(row[2]) if row[2] else 0
-        
-        projected_net_income = total_income - budgeted_amount
-        actual_net_income = total_income - actual_amount
-        
-        budget_sheet.update_cell(i, 5, projected_net_income)
-        budget_sheet.update_cell(i, 6, actual_net_income)
-    
-    print("Updated the budget sheet with Projected and Actual Net Income.\n")
-
-
-def update_budget_sheet():
-    """
-    New function to prompt the user for budget updates and apply them to the budget sheet.
-    """
-    print("\nEnter the category and the new budgeted amount for the update:")
-    print("Format: Category,Budgeted Amount")
-    data_str = input("Enter your data here: ")
-    budget_data = [data.strip() for data in data_str.split(",")]
-
-    if len(budget_data) != 2 or not validate_data(budget_data):
-        print("Failed to update the budget. Please try again.\n")
-        return
-    
-    category, budgeted_amount = budget_data
-    budget_sheet = SHEET.worksheet('budget')
-    categories = budget_sheet.col_values(1)  # Get all existing categories
-
-    if category in categories:
-        row_index = categories.index(category) + 1  # Sheets are 1-indexed
-        budget_sheet.update_cell(row_index, 2, budgeted_amount)  # Column 2 for budgeted amounts
-        print(f"Budget for '{category}' updated to {budgeted_amount}.\n")
-    else:
-        print(f"Category '{category}' not found. Please add it manually in the sheet if needed.\n")
-
-
 
 def main():
     print("Welcome to the Personal Finance Tracker.\n")
@@ -210,21 +131,16 @@ def main():
                 worksheet_name = "expenses" if data_type == 'expense' else "income"
                 update_worksheet(data, worksheet_name)
 
-                update_projected_and_actual_net_income()
-
                 if data_type == 'expense':  
                     update_actual_amounts()
                     update_surplus_deficit()  
-                print("Data added successfully. Projected and Actual Net Incomes are updated.\n")
+                print("Data added successfully.\n")
             else:
                 print("Failed to add data. Please try again.\n")
-        # elif action == 'update budget': 
-        #     # Ask user budget category and amount
-
-        #     update_actual_amounts()
-        #     update_surplus_deficit()
-        #     update_projected_and_actual_net_income()
-        #     print("Budget sheet updated successfully.\n")
+        elif action == 'update budget':
+            update_actual_amounts()
+            update_surplus_deficit()
+            print("Budget sheet updated successfully.\n")
         elif action == 'quit':
             print("Exiting the Personal Finance Tracker. Goodbye!")
             break
