@@ -59,17 +59,23 @@ def validate_data(values):
         print("Invalid data: Exactly 4 values are required.")
         return False
     
-    try:
-        datetime.strptime(values[0], 'DD-MM-YYYY')
-    except Exception:
+        try:
+            datetime.strptime(values[0], '%d-%m-%Y')  # Corrected format
+            float(values[2])
+            return True
+        except ValueError:
+            print("Invalid data: Date must be in DD-MM-YYYY format and Amount must be a number.")
+            return False
+    elif len(values) == 2:  # Handling budget update format
+        try:
+            float(values[1])  # Ensure the budgeted amount is a number
+            return True
+        except ValueError:
+            print("Invalid budgeted amount: Please enter a valid number.")
+            return False
+    else:
+        print("Invalid data: Incorrect number of values provided.")
         return False
-
-    try:
-        float(values[2])
-    except ValueError:
-        print("Invalid data: Amount must be a valid number.")
-        return False
-    return True
 
 
 def calculate_total(sheet_name):
