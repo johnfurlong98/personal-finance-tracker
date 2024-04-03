@@ -19,17 +19,36 @@ data = expenses.get_all_values()
 
 def get_financial_data(data_type):
     """
-    Prompt the user for financial data based on the specified type (expense or income).
+    Prompt the user for financial data based on the specified type (expense, income, or budget update).
     """
-    print(f"\nPlease enter your {data_type} data in the following format:")
-    print("Date (DD-MM-YYYY), Category, Amount, Description")
+    if data_type in ['expense', 'income']:
+        print(f"\nPlease enter your {data_type} data in the following format:")
+        print("Date (DD-MM-YYYY), Category, Amount, Description")
+    elif data_type == 'budget':
+        print("\nPlease enter the category and the new budgeted amount you'd like to update:")
+        print("Format: Category,Budgeted Amount")
+
     data_str = input("Enter your data here: ")
     financial_data = [data.strip() for data in data_str.split(",")]
 
-    if validate_data(financial_data):
-        return financial_data
-    else:
+    if data_type in ['expense', 'income'] and len(financial_data) != 4:
+        print("Invalid data: Please enter the data in the correct format for expense or income.")
         return None
+    elif data_type == 'budget' and len(financial_data) != 2:
+        print("Invalid data: Please enter the data in the correct format for budget updates.")
+        return None
+
+    # For budget updates, validate the budgeted amount is a number
+    if data_type == 'budget':
+        try:
+            financial_data[1] = float(financial_data[1])  # Convert budgeted amount to float
+        except ValueError:
+            print("Invalid budgeted amount: Please enter a valid number.")
+            return None
+
+    # Additional validation for dates and amounts could be placed here for expenses and income
+
+    return financial_data
 
 
 def validate_data(values):
@@ -39,6 +58,12 @@ def validate_data(values):
     if len(values) != 4:
         print("Invalid data: Exactly 4 values are required.")
         return False
+    
+    try:
+        datetime.strptime(values[0], 'DD-MM-YYYY')
+    except Exception:
+        return False
+
     try:
         float(values[2])
     except ValueError:
@@ -119,15 +144,10 @@ def update_surplus_deficit():
 
 
 def update_projected_and_actual_net_income():
-     """
-    Calculates and updates the budget sheet with Projected and Actual Net Income for each category.
-    Projected Net Income is total income minus each category's budgeted amount.
-    Actual Net Income is total income minus each category's actual amount spent.
-    """
-    total_income = calculate_total('income') 
+    total_income = calculate_total('income')
     
     budget_sheet = SHEET.worksheet('budget')
-    budget_records = budget_sheet.get_all_values()[1:]  
+    budget_records = budget_sheet.get_all_values()[1:]
     
     for i, row in enumerate(budget_records, start=2):
         category = row[0]
@@ -141,7 +161,6 @@ def update_projected_and_actual_net_income():
         budget_sheet.update_cell(i, 6, actual_net_income)
     
     print("Updated the budget sheet with Projected and Actual Net Income.\n")
-
 
 
 def main():
@@ -167,11 +186,13 @@ def main():
                 print("Data added successfully. Projected and Actual Net Incomes are updated.\n")
             else:
                 print("Failed to add data. Please try again.\n")
-        elif action == 'update budget': 
-            update_actual_amounts()
-            update_surplus_deficit()
-            update_projected_and_actual_net_income()
-            print("Budget sheet updated successfully.\n")
+        # elif action == 'update budget': 
+        #     # Ask user budget category and amount
+
+        #     update_actual_amounts()
+        #     update_surplus_deficit()
+        #     update_projected_and_actual_net_income()
+        #     print("Budget sheet updated successfully.\n")
         elif action == 'quit':
             print("Exiting the Personal Finance Tracker. Goodbye!")
             break
