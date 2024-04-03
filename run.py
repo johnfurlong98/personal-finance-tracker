@@ -21,7 +21,9 @@ def get_financial_data(data_type):
     """
     print(f"\nPlease enter your {data_type} data in the following format:")
     print("Date (DD-MM-YYYY), Category, Amount, Description")
-    data_str = input("Enter your data here: ")
+
+    data_str = input("Enter your data here: \n")
+
     financial_data = [data.strip() for data in data_str.split(",")]
 
     if validate_data(financial_data):
@@ -141,9 +143,9 @@ def update_surplus_deficit():
 def main():
     print("Welcome to the Personal Finance Tracker.\n")
     while True:
-        action = input("Choose action - 'add' for adding data,'quit' to exit: ").lower()
+        action = input("Choose action - 'add' for adding data,'quit' to exit:\n").lower()
         if action == 'add':
-            data_type = input("Type 'expense' or 'income' to specify the data type: ").lower()
+            data_type = input("Type 'expense' or 'income' to specify the data type:\n").lower()
             if data_type not in ['expense', 'income']:
                 print("Invalid type. Please choose 'expense' or 'income'.\n")
                 continue
