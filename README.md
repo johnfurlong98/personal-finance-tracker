@@ -4,7 +4,7 @@ Welcome to Personal Finance Tracker, a place where you can track your income and
 
 Live link to Project on Heroku : (https://personal-finance-tracker1-a9613824dabe.herokuapp.com/)
 
-Live link to Project on Github : (https://github.com/johnfurlong98/personal-finance-tracker/tree/main)
+Live link to Project on Github : (https://github.com/johnfurlong98/personal-finance-tracker)
 
 Live link to Google Sheets : (https://docs.google.com/spreadsheets/d/1hlqQIDcCy1w8jJdtelROL88UdgKCpmyeFF5UgE-qOno/edit?usp=sharing)
 
