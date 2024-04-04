@@ -2,9 +2,15 @@
 
 Welcome to Personal Finance Tracker, a place where you can track your income and expenses and budget for expexted expenses.
 
+Live link to Project on Heroku : (https://personal-finance-tracker1-a9613824dabe.herokuapp.com/)
+
+Live link to Project on Github : (https://github.com/johnfurlong98/personal-finance-tracker/tree/main)
+
+Live link to Google Sheets : (https://docs.google.com/spreadsheets/d/1hlqQIDcCy1w8jJdtelROL88UdgKCpmyeFF5UgE-qOno/edit?usp=sharing)
+
 ## Project Overview
 
-- The Personal Finance Tracker is a command-line tool designed to help users manage their personal finances. It allows users to input their income and expenses, track their spending across different categories, and monitor their overall financial health.Users can set budgets for different expense categories and track their spending against these budgets(Currently, the application requires users to manually set a budget for anticipated expenses by directly inputting the budget category and the allocated amount into the budget sheet. When a user enters an expense via the terminal, if the expense's category matches one of the predefined categories in the budget, the application then calculates and displays the variance between the actual spent amount and the initially budgeted amount. This process necessitates that categories and budget allocations are accurately entered and matched in the budget sheet for the functionality to operate as intended.)
+- The Personal Finance Tracker is a command-line tool designed to help users manage their personal finances. It leverages Google Sheets as a backend API. It allows users to input their income and expenses, track their spending across different categories, and monitor their overall financial health.Users can set budgets for different expense categories and track their spending against these budgets(Currently, the application requires users to manually set a budget for anticipated expenses by directly inputting the budget category and the allocated amount into the budget sheet. When a user enters an expense via the terminal, if the expense's category matches one of the predefined categories in the budget, the application then calculates and displays the variance between the actual spent amount and the initially budgeted amount. This process necessitates that categories and budget allocations are accurately entered and matched in the budget sheet for the functionality to operate as intended.)
 
 ## Key Project Goals
 
@@ -120,8 +126,14 @@ Welcome to Personal Finance Tracker, a place where you can track your income and
 To solve this, we streamlined the process by using datetime.strptime(values[0], '%d-%m-%Y'), which inherently checks for the correct format and logical calendar dates, such as ensuring the month is between 1 and 12 and the day is valid for the given month. This effectively prevented the acceptance of illogical dates with incorrect numbers of digits, ensuring that only valid dates in the DD-MM-YYYY format, with proper day and month values, are accepted.
 
 ## Deployment  
-
-- 
+- Go to the home page on "Heroku", click "new", then proced to click "create new app".
+- Choose app name and region, click "create app".
+- Navigate to the "settings tab", then click "reveal config vars", then in "key box" section type "CREDS" and in the "value" section copy and paste the full "creds.json file" 
+  and click "add". follow the same steps to add the "PORT" for "key" and "8000" for "value".
+- Then also in the "settings tab" navigate to "add buildpack" click "add buildpack" and select "Python" then add and then select "node.js" and add.
+- Navigate to the "deploy" tab, click "connect to github", search for your repository by name the same as on github, then click "connect".
+- Then choose "automatic deploy" or "manual deploy".
+- When the app is successfully deployed click "view app". 
 
 ## Forking this project
 - Fork this project by:
